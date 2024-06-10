@@ -14,3 +14,10 @@ terraform {
     path = "terraform.tfstate"
   }
 }
+
+data "terraform_remote_state" "network" {
+  backend = "local"
+  config = {
+    path = "../../vpc/dev/vpc.tfstate"
+  }
+}

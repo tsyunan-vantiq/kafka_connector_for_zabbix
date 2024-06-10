@@ -58,3 +58,7 @@ Kafka connector producer settings:
 - Kafka.CaFile
 - Kafka.ClientCertFile
 - Kafka.ClientKeyFile
+
+# 参考
+
+- https://www.sraoss.co.jp/tech-blog/zabbix/zabbix64-newfeature-latest/

@@ -1,13 +1,3 @@
-variable "cloudwatch_log_group" {
-  description = "CloudWatchのロググループ"
-  type        = string
-}
-
-variable "cloudwatch_log_group_retention_in_days" {
-  description = "CloudWatchのログの保持期間"
-  type        = number
-}
-
 variable "cluster_name" {
   description = "MSKクラスター名"
   type        = string
@@ -100,16 +90,4 @@ variable "vpc_id" {
 variable "vpc_cidr" {
   description = "VPCのCIDRブロック"
   type        = string
-}
-
-variable "scaling_max_capacity" {
-  description = "ストレージの最大容量(GiB)"
-  type        = number
-  default     = 1000
-}
-
-variable "scaling_target_value" {
-  description = "ストレージのオートスケーリングが起動する閾値"
-  type        = number
-  default     = 50
 }

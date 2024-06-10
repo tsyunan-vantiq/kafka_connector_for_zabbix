@@ -1,5 +1,6 @@
 data "template_file" "msk-custom-configuration" {
   template = file("${path.module}/msk-custom-configuration.json.tpl")
+  # 
   vars = {
     auto_create_topics_enable = var.auto_create_topics_enable
     delete_topic_enable       = var.delete_topic_enable

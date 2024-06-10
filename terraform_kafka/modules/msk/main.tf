@@ -1,8 +1,3 @@
-resource "aws_cloudwatch_log_group" "main" {
-  name              = var.cloudwatch_log_group
-  retention_in_days = var.cloudwatch_log_group_retention_in_days
-}
-
 resource "aws_msk_cluster" "main" {
   cluster_name           = var.cluster_name
   kafka_version          = var.kafka_version
@@ -28,9 +23,10 @@ resource "aws_msk_cluster" "main" {
 
   logging_info {
     broker_logs {
-      cloudwatch_logs {
-        enabled   = true
-        log_group = aws_cloudwatch_log_group.main.name
+      s3 {
+        enabled = true
+        bucket  = aws_s3_bucket.bucket.id
+        prefix  = "logs/msk-"
       }
     }
   }
@@ -41,57 +37,12 @@ resource "aws_msk_cluster" "main" {
   }
 
   client_authentication {
-    unauthenticated = false
-    sasl {
-      iam = true
-    }
-  }
-
-  open_monitoring {
-    prometheus {
-      jmx_exporter {
-        enabled_in_broker = false
-      }
-      node_exporter {
-        enabled_in_broker = false
-      }
-    }
+    unauthenticated = true
   }
 
   timeouts {
     create = var.create_timeout
     update = var.update_timeout
     delete = var.delete_timeout
-  }
-
-  # volumeはオートスケールするためignore
-  lifecycle {
-    ignore_changes = [
-      broker_node_group_info[0].storage_info[0].ebs_storage_info[0].volume_size
-    ]
-  }
-}
-
-resource "aws_appautoscaling_target" "kafka_storage" {
-  max_capacity       = var.scaling_max_capacity
-  min_capacity       = 1 # MSKの場合は固定値
-  resource_id        = aws_msk_cluster.main.arn
-  scalable_dimension = "kafka:broker-storage:VolumeSize"
-  service_namespace  = "kafka"
-}
-
-resource "aws_appautoscaling_policy" "kafka_broker_scaling_policy" {
-  name               = "${var.cluster_name}-broker-scaling-policy"
-  policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_msk_cluster.main.arn
-  scalable_dimension = aws_appautoscaling_target.kafka_storage.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.kafka_storage.service_namespace
-
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "KafkaBrokerStorageUtilization"
-    }
-
-    target_value = var.scaling_target_value
   }
 }
