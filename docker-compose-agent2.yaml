@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  agent2:
+    image: zabbix/zabbix-agent2:latest
+    ports:
+      - "10050:10050"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DATA_DIRECTORY}/etc/zabbix/zabbix_agentd.d:/etc/zabbix/zabbix_agentd.d:ro
+      - ${DATA_DIRECTORY}/var/lib/zabbix/modules:/var/lib/zabbix/modules:ro
+      - ${DATA_DIRECTORY}/var/lib/zabbix/enc:/var/lib/zabbix/enc:ro
+      - ${DATA_DIRECTORY}/var/lib/zabbix/ssh_keys:/var/lib/zabbix/ssh_keys:ro
+    tmpfs: /tmp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+      mode: global
+    environment:
+      ZBX_HOSTNAME: "zabbix-agent"
+      ZBX_SERVER_HOST: "10.0.0.208"
+      ZBX_SERVER_PORT: '10051'
+    privileged: true
+    pid: "host"
+    stop_grace_period: 5s
+    labels:
+      com.zabbix.description: "Zabbix agent 2"
+      com.zabbix.company: "Zabbix LLC"
+      com.zabbix.component: "zabbix-agent2"
