@@ -2,10 +2,10 @@
 FROM golang:1.19 AS builder
 
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
+# COPY go.mod go.sum ./
+# RUN go mod download
 COPY . .
-RUN go build -o kafka-connector
+RUN make build
 
 FROM debian:bullseye-slim
 WORKDIR /app

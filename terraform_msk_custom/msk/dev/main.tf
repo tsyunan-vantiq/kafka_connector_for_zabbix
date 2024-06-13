@@ -14,12 +14,11 @@ module "msk" {
   client_security_group_description = local.client_security_group_description
   #
   vpc_id   = data.terraform_remote_state.vpc.outputs.vpc.id
-  vpc_cidr = data.terraform_remote_state.vpc.outputs.vpc.cidr
+  vpc_cidr = data.terraform_remote_state.vpc.outputs.vpc.cidr_block
 
   # このCIDR内からは、クライアント用SGを付与せずともMSKにアクセス可能となる
   client_cidr_blocks = [
-    data.terraform_remote_state.vpc.outputs.vpc.cidr,
-    data.terraform_remote_state.vpc.outputs.second-cidr,
+    data.terraform_remote_state.vpc.outputs.vpc.cidr_block
   ]
 
   depends_on = [
