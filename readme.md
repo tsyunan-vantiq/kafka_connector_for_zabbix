@@ -26,7 +26,7 @@ https://www.zabbix.com/documentation/7.0/en/manual/config/export/streaming#confi
 
 # 
 
-docker exec -it 6b6a254169e9 sh
+docker exec -it 72f19860d16c sh
 zabbix_server -R config_cache_reload
 ```
 
@@ -105,3 +105,30 @@ security.protocol=PLAINTEXT
 # itemsトピックメッセージを確認
 ./kafka-console-consumer.sh --bootstrap-server b-1.exdev.ql7lgu.c6.kafka.us-west-2.amazonaws.com:9092 --consumer.config client.properties --topic items --from-beginning
 ```
+
+> Kafka connector can also be executed with the default kafka_connector.conf configuration file. However, by default, it will only accept connections from a Zabbix server running on localhost, and the endpoints of Kafka topics will be pre-defined.
+
+> 2. Configure a connector in Zabbix as described on the Streaming to external systems page in Zabbix Manual. When specifying the receiver (Kafka connector) URLs in Zabbix frontend, ensure that they are specified as `http://<host>:<port>/api/v1/items` and `http://<host>:<port>/api/v1/events`
+
+![alt text](image.png)
+
+# docker logs 46b87fc9f434
+
+kafka-connector:latestのログを確認してみたのですが、よろ分からないログがありました
+
+下記URLが使えないのか？？？
+`localhost:8080/api/v1/items`
+```
+2024/06/13 15:04:40.350462 Starting server
+2024/06/15 02:47:08 http: URL query contains semicolon, which is no longer a supported separator; parts of the query may be stripped when parsed; see golang.org/issue/25192
+2024/06/15 15:43:41 http: URL query contains semicolon, which is no longer a supported separator; parts of the query may be stripped when parsed; see golang.org/issue/25192
+2024/06/16 08:52:12 http: URL query contains semicolon, which is no longer a supported separator; parts of the query may be stripped when parsed; see golang.org/issue/25192
+```
+
+下記URLに変更し、
+`http://localhost:8080/api/v1/items`
+
+# Ref
+
+- https://www.zabbix.com/documentation/7.0/en/manual/config/export/streaming#configuration
+- https://git.zabbix.com/projects/ZT/repos/kafka-connector/browse
