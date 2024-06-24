@@ -13,6 +13,14 @@ module "ec2_instance_zabbix_server_with_connector" {
   subnet_id              = element(module.vpc.public_subnets, 0)
   ami                    = data.aws_ami.ubuntu.image_id
 
+  root_block_device = [
+    {
+      encrypted   = false
+      volume_type = "gp3"
+      volume_size = 30
+    },
+  ]
+
   tags = {
     Purpose     = "For zabbix kafka-connector"
     Environment = "dev"
@@ -64,3 +72,4 @@ data "template_file" "bastion" {
     worker_access_private_key = file("./id_rsa_eks_bastion")
   }
 }
+# terraform import aws_instance.
